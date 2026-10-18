@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>100HICH | منوی دیجیتال</title>
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
+<style>
+:root {
+  --navy-deep: #0d1428;
+  --navy: #131c36;
+  --navy-card: #1a2447;
+  --navy-line: #26325c;
+  --navy-text: #c6cde0;
+  --navy-dim: #7d88a8;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: "Vazirmatn", Tahoma, sans-serif;
+  background: linear-gradient(180deg, var(--navy-deep) 0%, var(--navy) 100%);
+  color: var(--navy-text);
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+.header {
+  text-align: center;
+  padding: 44px 20px 28px;
+  border-bottom: 1px solid var(--navy-line);
+  position: relative;
+}
+.logo-circle {
+  width: 84px; height: 84px;
+  margin: 0 auto 14px;
+  background: var(--navy-card);
+  color: var(--navy-text);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; font-weight: 800;
+  border: 1px solid var(--navy-line);
+  letter-spacing: 2px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+}
+.header h1 { font-size: 1.7rem; color: #e8ecf6; letter-spacing: 1px; }
+.tagline { color: var(--navy-dim); margin-top: 6px; font-size: .9rem; }
+/* دکمه مخفی ادمین: سه بار روی لوگو بزن */
+#adminBtn {
+  position: absolute; top: 10px; left: 10px;
+  width: 30px; height: 30px;
+  opacity: 0; cursor: pointer;
+}
+
+.tabs {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; gap: 8px;
+  background: rgba(13,20,40,.92);
+  backdrop-filter: blur(8px);
+  padding: 12px 16px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--navy-line);
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex-shrink: 0;
+  background: var(--navy-card);
+  color: var(--navy-dim);
+  border: 1px solid var(--navy-line);
+  padding: 9px 20px;
+  border-radius: 24px;
+  font-family: inherit;
+  font-size: .92rem;
+  cursor: pointer;
+  transition: .2s;
+}
+.tab:hover { color: #e8ecf6; }
+.tab.active { background: var(--navy-line); color: #fff; border-color: #3a4878; }
+
+.section-title {
+  max-width: 640px;
+  margin: 30px auto 14px;
+  padding: 0 20px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #e8ecf6;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-title::after { content: ""; flex: 1; height: 1px; background: var(--navy-line); }
+.section-title .sec-actions { display: none; gap: 6px; }
+.section-title.editing .sec-actions { display: flex; }
+
+.menu { max-width: 640px; margin: 0 auto; padding: 0 16px; display: grid; gap: 10px; }
+.item {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--navy-card);
+  border: 1px solid var(--navy-line);
+  border-radius: 12px;
+  padding: 14px 18px;
+  transition: .2s;
+  gap: 10px;
+}
+.item:hover { border-color: #3a4878; }
+.item h3 { font-size: 1rem; color: #dfe4f0; font-weight: 600; }
+.item .dots { flex: 1; border-bottom: 1px dotted var(--navy-line); margin: 0 12px; }
+.item .price { color: #e8ecf6; font-weight: 700; font-size: .95rem; white-space: nowrap; }
+
+/* حالت ویرایش */
+body.edit-mode .item { border-style: dashed; }
+.item .it-actions { display: none; gap: 4px; }
+body.edit-mode .item .it-actions { display: flex; }
+.btn-icon {
+  background: var(--navy-line); border: 1px solid #3a4878; color: #dfe4f0;
+  width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: .9rem;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.btn-icon.danger { background: #5c1f2a; border-color: #8a3242; }
+.add-item {
+  max-width: 640px; margin: 8px auto 0; padding: 0 16px; display: none;
+}
+.add-item button { width: 100%; background: transparent; border: 1px dashed var(--navy-line); color: var(--navy-dim); border-radius: 12px; padding: 10px; font-family: inherit; cursor: pointer; }
+body.edit-mode .add-item { display: block; }
+.add-sec-btn { display: none; max-width: 640px; margin: 24px auto 0; padding: 0 20px; }
+body.edit-mode .add-sec-btn { display: block; }
+.add-sec-btn button { width: 100%; background: transparent; border: 1px dashed var(--navy-line); color: var(--navy-dim); border-radius: 12px; padding: 12px; font-family: inherit; cursor: pointer; }
+
+/* نوار ویرایش */
+#editBar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+  background: #3a4878; color: #fff;
+  padding: 12px 16px; text-align: center; font-size: .92rem;
+  display: none; box-shadow: 0 -4px 16px rgba(0,0,0,.4);
+}
+body.edit-mode #editBar { display: flex; align-items: center; justify-content: center; gap: 12px; }
+#editBar button {
+  background: #0d1428; color: #fff; border: none; border-radius: 10px;
+  padding: 8px 18px; font-family: inherit; cursor: pointer;
+}
+
+/* مودال‌ها */
+.overlay {
+  position: fixed; inset: 0; background: rgba(5,8,18,.8); z-index: 100;
+  display: none; align-items: center; justify-content: center; padding: 20px;
+}
+.overlay.open { display: flex; }
+.modal {
+  background: var(--navy-card); border: 1px solid var(--navy-line);
+  border-radius: 16px; padding: 24px; width: 100%; max-width: 380px; text-align: center;
+}
+.modal h3 { color: #e8ecf6; margin-bottom: 16px; }
+.modal input {
+  width: 100%; background: var(--navy-deep); border: 1px solid var(--navy-line);
+  color: #e8ecf6; border-radius: 10px; padding: 10px 14px; font-family: inherit;
+  font-size: 1rem; margin-bottom: 12px; text-align: center;
+}
+.modal input:focus { outline: none; border-color: #3a4878; }
+.modal .row { display: flex; gap: 8px; }
+.modal button {
+  flex: 1; background: var(--navy-line); color: #fff; border: none;
+  border-radius: 10px; padding: 10px; font-family: inherit; cursor: pointer;
+}
+.modal button.ghost { background: transparent; border: 1px solid var(--navy-line); color: var(--navy-dim); }
+#passError { color: #e8807a; font-size: .85rem; margin-bottom: 10px; display: none; }
+
+.note { max-width: 640px; margin: 34px auto 0; padding: 0 20px; text-align: center; color: var(--navy-dim); font-size: .88rem; font-style: italic; }
+.footer { text-align: center; color: var(--navy-dim); padding: 30px 20px 0; font-size: .82rem; }
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div id="adminTapZone" style="position:absolute;inset:0;cursor:default;"></div>
+  <div class="logo-circle">100</div>
+  <h1>کافه 100HICH</h1>
+  <p class="tagline">منوی دیجیتال</p>
+</header>
+
+<nav class="tabs" id="tabs"></nav>
+<main id="content"></main>
+
+<p class="note">☕ محصولات قهوه به‌صورت تازه رست شده است</p>
+<footer class="footer">© کافه 100HICH</footer>
+
+<!-- نوار حالت ویرایش -->
+<div id="editBar">
+  <span>🔧 حالت ویرایش فعال است</span>
+  <button onclick="exitEdit()">پایان ویرایش</button>
+</div>
+
+<!-- مودال رمز -->
+<div class="overlay" id="passModal">
+  <div class="modal">
+    <h3>ورود مدیریت 🔐</h3>
+    <input type="password" id="passInput" placeholder="رمز مدیریت">
+    <p id="passError">رمز اشتباه است!</p>
+    <div class="row">
+      <button onclick="checkPass()">ورود</button>
+      <button class="ghost" onclick="closeModal('passModal')">انصراف</button>
+    </div>
+  </div>
+</div>
+
+<!-- مودال افزودن/ویرایش آیتم -->
+<div class="overlay" id="itemModal">
+  <div class="modal">
+    <h3 id="itemModalTitle">آیتم جدید</h3>
+    <input type="text" id="itemName" placeholder="نام آیتم">
+    <input type="text" id="itemPrice" placeholder="قیمت (اختیاری)">
+    <div class="row">
+      <button onclick="saveItem()">ذخیره</button>
+      <button class="ghost" onclick="closeModal('itemModal')">انصراف</button>
+    </div>
+  </div>
+</div>
+
+<!-- مودال افزودن دسته -->
+<div class="overlay" id="secModal">
+  <div class="modal">
+    <h3>دسته جدید</h3>
+    <input type="text" id="secName" placeholder="نام دسته">
+    <div class="row">
+      <button onclick="saveSection()">ذخیره</button>
+      <button class="ghost" onclick="closeModal('secModal')">انصراف</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ADMIN_PASS = "100hich"; // ← رمز مدیریت (اینجا عوضش کن)
+
+const DEFAULT_DATA = {
+  sections: [
+    { id: "espresso", name: "قهوه بر پایه اسپرسو", items: [
+      { name: "اسپرسو", price: "" }, { name: "آمریکانو", price: "" },
+      { name: "اسپرسو ماکیاتو", price: "" }, { name: "کورتادو", price: "" },
+      { name: "کاپوچینو", price: "" }, { name: "لاته", price: "" },
+      { name: "فلت وایت", price: "" }, { name: "کارامل ماکیاتو", price: "" }, { name: "موکا", price: "" }
+    ]},
+    { id: "ice", name: "قهوه بر پایه اسپرسو (آیس)", items: [
+      { name: "آیس آمریکانو", price: "" }, { name: "آیس تافی", price: "" },
+      { name: "آیس لاته", price: "" }, { name: "آیس موکا", price: "" },
+      { name: "آیس کارامل ماکیاتو", price: "" }, { name: "آیس لاته فندق", price: "" },
+      { name: "آیس لاته توت فرنگی", price: "" }, { name: "آیس لاته نارگیل", price: "" }
+    ]},
+    { id: "latte", name: "انواع لاته با سیروپ", items: [
+      { name: "لاته فندق", price: "" }, { name: "لاته نارگیل", price: "" },
+      { name: "لاته توت فرنگی", price: "" }, { name: "لاته رام", price: "" }, { name: "لاته لوتوس", price: "" }
+    ]},
+    { id: "tea", name: "چای و دمنوش‌ها", items: [
+      { name: "چای تخصصی لاهیجان", price: "" }, { name: "دمنوش چای سبز", price: "" },
+      { name: "دمنوش به لیمو", price: "" }, { name: "دمنوش آرامش", price: "" }, { name: "دمنوش سرماخوردگی", price: "" }
+    ]},
+    { id: "hot", name: "نوشیدنی گرم", items: [
+      { name: "هات چاکلت", price: "" }, { name: "ماسالا", price: "" },
+      { name: "چای کرک", price: "" }, { name: "اپل سایدر", price: "" }, { name: "شیر عسل دارچین", price: "" }
+    ]},
+    { id: "cold", name: "نوشیدنی سرد بر پایه سیروپ", items: [
+      { name: "لیموناد", price: "" }, { name: "موهیتو", price: "" },
+      { name: "لیموناد زنجبیل", price: "" }, { name: "موهیتو زنجبیل", price: "" },
+      { name: "آیس تی", price: "" }, { name: "آیس تی وانیل", price: "" },
+      { name: "آیس تی کارامل", price: "" }, { name: "ردمون", price: "" },
+      { name: "رابیو", price: "" }, { name: "نئون", price: "" }
+    ]},
+    { id: "brew", name: "قهوه‌های دمی", items: [
+      { name: "V60", price: "" }, { name: "Chemex", price: "" }
+    ]}
+  ]
+};
+
+function loadData() {
+  const saved = localStorage.getItem("menu100hich");
+  return saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_DATA));
+}
+function saveData() { localStorage.setItem("menu100hich", JSON.stringify(data)); }
+
+let data = loadData();
+let editing = false;
+let activeCat = "all";
+let editTarget = null; // {secId, index} یا {secId, index: -1} برای آیتم جدید
+let editSecId = null;
+
+function faDigits(s) { return String(s).replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]); }
+
+function render() {
+  const tabs = document.getElementById("tabs");
+  tabs.innerHTML = `<button class="tab ${activeCat==="all"?"active":""}" data-cat="all">همه</button>` +
+    data.sections.map(s =>
+      `<button class="tab ${activeCat===s.id?"active":""}" data-cat="${s.id}">${s.name}${editing?` <span class="sec-actions"><button class="btn-icon danger" onclick="event.stopPropagation();deleteSection('${s.id}')">🗑</button></span>`:""}</button>`
+    ).join("");
+  tabs.querySelectorAll(".tab").forEach(t => t.addEventListener("click", e => {
+    if (editing) return;
+    activeCat = t.dataset.cat; render();
+  }));
+
+  const content = document.getElementById("content");
+  content.innerHTML = data.sections
+    .filter(s => activeCat === "all" || s.id === activeCat)
+    .map(s => `
+      <h2 class="section-title ${editing?"editing":""}">${s.name}
+        ${editing?`<span class="sec-actions">
+          <button class="btn-icon" onclick="openItemModal('${s.id}',-1)">➕</button>
+          <button class="btn-icon" onclick="renameSection('${s.id}')">✏️</button>
+          <button class="btn-icon danger" onclick="deleteSection('${s.id}')">🗑</button>
+        </span>`:""}
+      </h2>
+      <div class="menu">
+        ${s.items.map((it, i) => `
+          <div class="item">
+            <h3>${it.name}</h3><span class="dots"></span>
+            ${it.price ? `<span class="price">${faDigits(it.price)}</span>` : ""}
+            ${editing?`<span class="it-actions">
+              <button class="btn-icon" onclick="openItemModal('${s.id}',${i})">✏️</button>
+              <button class="btn-icon danger" onclick="deleteItem('${s.id}',${i})">🗑</button>
+            </span>`:""}
+          </div>`).join("")}
+      </div>
+      ${editing?`<div class="add-item"><button onclick="openItemModal('${s.id}',-1)">➕ افزودن آیتم به «${s.name}»</button></div>`:""}
+    `).join("") +
+    (editing?`<div class="add-sec-btn"><button onclick="openModal('secModal'); document.getElementById('secName').value='';">➕ افزودن دسته جدید</button></div>`:"");
+}
+
+/* ---------- مدیریت ---------- */
+let tapCount = 0, tapTimer = null;
+document.getElementById("adminTapZone").addEventListener("click", () => {
+  tapCount++;
+  clearTimeout(tapTimer);
+  tapTimer = setTimeout(() => tapCount = 0, 1200);
+  if (tapCount >= 3) { tapCount = 0; openModal("passModal"); document.getElementById("passInput").value=""; document.getElementById("passError").style.display="none"; }
+});
+function checkPass() {
+  if (document.getElementById("passInput").value === ADMIN_PASS) {
+    closeModal("passModal");
+    editing = true;
+    document.body.classList.add("edit-mode");
+    render();
+  } else {
+    document.getElementById("passError").style.display = "block";
+  }
+}
+function exitEdit() {
+  editing = false;
+  document.body.classList.remove("edit-mode");
+  saveData();
+  render();
+}
+function openModal(id) { document.getElementById(id).classList.add("open"); }
+function closeModal(id) { document.getElementById(id).classList.remove("open"); }
+
+function openItemModal(secId, index) {
+  editTarget = { secId, index };
+  const m = document.getElementById("itemModal");
+  m.querySelector("h3").textContent = index === -1 ? "آیتم جدید" : "ویرایش آیتم";
+  if (index === -1) {
+    document.getElementById("itemName").value = "";
+    document.getElementById("itemPrice").value = "";
+  } else {
+    const it = data.sections.find(s=>s.id===secId).items[index];
+    document.getElementById("itemName").value = it.name;
+    document.getElementById("itemPrice").value = it.price;
+  }
+  openModal("itemModal");
+}
+function saveItem() {
+  const name = document.getElementById("itemName").value.trim();
+  if (!name) return;
+  const price = document.getElementById("itemPrice").value.trim();
+  const sec = data.sections.find(s => s.id === editTarget.secId);
+  if (editTarget.index === -1) sec.items.push({ name, price });
+  else sec.items[editTarget.index] = { name, price };
+  saveData(); closeModal("itemModal"); render();
+}
+function deleteItem(secId, index) {
+  if (!confirm("این آیتم حذف شود؟")) return;
+  data.sections.find(s=>s.id===secId).items.splice(index, 1);
+  saveData(); render();
+}
+function renameSection(secId) {
+  editSecId = secId;
+  const sec = data.sections.find(s=>s.id===secId);
+  document.getElementById("secName").value = sec.name;
+  openModal("secModal");
+}
+function saveSection() {
+  const name = document.getElementById("secName").value.trim();
+  if (!name) return;
+  if (editSecId) {
+    data.sections.find(s=>s.id===editSecId).name = name;
+    editSecId = null;
+  } else {
+    data.sections.push({ id: "sec" + Date.now(), name, items: [] });
+  }
+  saveData(); closeModal("secModal"); render();
+}
+function deleteSection(secId) {
+  if (!confirm("این دسته با همه آیتم‌هایش حذف شود؟")) return;
+  data.sections = data.sections.filter(s => s.id !== secId);
+  if (activeCat === secId) activeCat = "all";
+  saveData(); render();
+}
+
+render();
+</script>
+</body>
+</html>
